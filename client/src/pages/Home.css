@@ -1,0 +1,92 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #A4F0C2;
+}
+main {
+    display: flex;
+    justify-content: center; /* Center the container horizontally */
+    align-items: center; /* Center the container vertically */
+    height: calc(100vh - 120px); /* Adjust the height to leave space for header and footer */
+    flex-direction: column; /* Stack children vertically */
+}
+
+#tapes-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center items horizontally */
+}
+.tape:hover .tape-text {
+    opacity: 1;
+  }
+  
+/* Inside your Home.css or a separate CSS file: */
+.tape-text {
+    opacity: 0;
+    transition: opacity 0.3s;
+    position: absolute; /* Position the text relative to the tape */
+    top: 50%; /* Adjust vertically */
+    left: 50%; /* Adjust horizontally */
+    transform: translate(-50%, -50%); /* Center the text */
+    font-size: 16px; /* Customize font size */
+    color: black; /* Customize text color */
+  }
+  
+  
+
+#tapes {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+}
+
+.tape {
+    position: relative;
+    padding: 20px;
+    text-align: center;
+    flex: 1;
+    margin: 0 10px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+.tapeDisappear:hover {
+    opacity: 0;
+}
+.tape img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 10px;
+}
+/* 
+.tape:hover {
+    opacity: 0;
+} */
+
+.tape:first-child {
+    margin-left: 0; /* Remove margin from the first box */
+}
+
+.tape:last-child {
+    margin-right: 0; /* Remove margin from the last box */
+}
+
+#record-button {
+    background-color: #FE7271;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px; /* Add margin to create space between tapes and button */
+    cursor: pointer;
+    border: none;
+}
+
+#record-button img {
+    width: 50px;
+    height: 50px;
+}
