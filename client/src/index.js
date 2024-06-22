@@ -1,9 +1,10 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
-import Home from "./pages/Home";
 import NoPage from "./pages/NoPage";
-import Blogs from "./pages/Blogs";
+import RecordVent from "./pages/RecordVent";
+import ViewVent from "./pages/ViewVent";
+import Home from "./pages/Home";
 
 export default function App() {
   return (
@@ -11,7 +12,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="blogs" element={<Blogs />} />
+          <Route path="recordvent" element={<RecordVent />} />
+          <Route path="viewvent" element={<ViewVent />} />
           <Route path="*" element={<NoPage />} />
         </Route>
       </Routes>
