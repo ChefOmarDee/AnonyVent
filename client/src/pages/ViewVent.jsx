@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { useParams } from 'react-router-dom';
 import { UserContext } from "./UserContext";
+import "./ViewVent.css";
 
 const ViewVent = () => {
     let { userId } = useParams();

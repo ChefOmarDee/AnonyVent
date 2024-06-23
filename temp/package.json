@@ -8,5 +8,6 @@
     "node-fetch": "^2.7.0",
     "openai": "^4.52.0",
     "react-scripts": "^4.0.3"
+    "fs": "^0.0.1-security",
   }
 }
