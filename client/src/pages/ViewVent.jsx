@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useContext, useCallback, useMemo } from 'react';
 import { UserContext } from './UserContext';
 
-const propDuration = 30;
+const propDuration = 180;
 
 const ViewVent = () => {
     const { value } = useContext(UserContext); // Remove setValue since it's not used
@@ -16,6 +16,7 @@ const ViewVent = () => {
     const [currentTime, setCurrentTime] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [hasDuration, setHasDuration] = useState(false);
+    const [duration, setDuration] = useState(propDuration);
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -30,9 +31,10 @@ const ViewVent = () => {
         };
 
         const handleLoadedMetadata = () => {
-            const duration = propDuration || audio.duration;
-            if (!isNaN(duration) && duration > 0) {
+            const audioDuration = propDuration || audio.duration;
+            if (!isNaN(audioDuration) && audioDuration > 0) {
                 setHasDuration(true);
+                setDuration(audioDuration);
             }
             setIsLoading(false);
         };
@@ -60,12 +62,11 @@ const ViewVent = () => {
 
     const handleSeek = useCallback((e) => {
         const audio = audioRef.current;
-        const newTime = e.target.value;
+        const scrollValue = e.target.value;
+        const newTime = (scrollValue / 100) * duration; // Scale based on duration
         audio.currentTime = newTime;
         setCurrentTime(newTime);
-    }, []);
-
-    const displayedDuration = useMemo(() => propDuration, []);
+    }, [duration]);
 
     return (
         <div className="AudioFileListItem">
@@ -79,14 +80,14 @@ const ViewVent = () => {
                 <input
                     type="range"
                     min="0"
-                    max={displayedDuration}
-                    value={currentTime}
+                    max="100" // Set range to 100 for scaling
+                    value={(currentTime / duration) * 100} // Scale current time
                     onChange={handleSeek}
-                    style={{ width: '100%' }}
+                    style={{ width: '50%' }} // Set width to 50%
                     disabled={isLoading || !hasDuration}
                 />
                 <span>
-                    {isLoading ? 'Loading...' : (hasDuration ? `${Math.floor(currentTime)} / ${Math.floor(displayedDuration)} sec` : 'Duration unavailable')}
+                    {isLoading ? 'Loading...' : (hasDuration ? `${Math.floor(currentTime)} / ${Math.floor(duration)} sec` : 'Duration unavailable')}
                 </span>
             </div>
         </div>
