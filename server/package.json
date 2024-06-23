@@ -1,5 +1,6 @@
 {
   "dependencies": {
+
     "assemblyai": "^4.5.0",
     "aws-sdk": "^2.1646.0",
     "cors": "^2.8.5",

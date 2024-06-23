@@ -4,9 +4,43 @@ const AWS = require("aws-sdk");
 const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
-const dotenv = require("dotenv");
-const { MongoClient } = require("mongodb");
-dotenv.config();
+const cors = require("cors");
+const dotenv = require("dotenv").config();
+const { MongoClient } = require('mongodb');
+// MongoDB connection string
+const uri = process.env.CONNECTION_STR; 
+const client = new MongoClient(uri);
+
+const app = express();
+const port = 8080;
+
+// Enable CORS
+app.use(cors());
+
+async function main() {
+  try {
+    // Connect to MongoDB cluster
+    await client.connect();
+    const database = client.db('AnonyVent');
+    // Access the collection
+    const collection = database.collection('Vents');
+    const randomDocuments = await collection.aggregate([{ $sample: { size: 3 } }]).toArray();
+    //const titles = randomDocuments.map(doc => doc.title);
+	//console.log(titles);
+	console.log(randomDocuments);
+    return randomDocuments;
+  } catch (e) {
+    console.log(e);
+    throw e; // Re-throw the error to be caught by the caller
+  } finally {
+    await client.close();
+  }
+}
+
+
+// Start the server
+
+=======
 
 (async () => {
 	const fetch = (await import("node-fetch")).default;
@@ -74,6 +108,16 @@ dotenv.config();
 	const client = new MongoClient(uri);
 
 	// Route to handle file upload and upload to S3
+  app.get('/get', async (req, res) => {
+  try {
+    const docs = await main();
+    res.json(docs); // Send the titles as JSON response
+  } catch (e) {
+    console.error('Error fetching titles from MongoDB:', e);
+    res.status(500).json({ error: 'Internal Server Error' }); // Send an error response
+  }
+});
+
 	app.post("/upload", upload.single("mp3file"), async (req, res) => {
 		if (!req.file) {
 			return res.status(400).send("No file uploaded.");
