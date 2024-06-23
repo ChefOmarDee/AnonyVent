@@ -10,36 +10,42 @@ const Home = () => {
 			<main>
 				<div id="tapes-container">
 					<div id="tapes" style={{ position: "relative" }}>
-						<div className="tape">
-							<img
-								className="tapeDisappear"
-								src={tapeImg}
-								alt="tape1"
-								width="250"
-								height="250"
-							/>
-							<div className="tape-text">afasdf</div>
-						</div>
-						<div className="tape">
-							<img
-								className="tapeDisappear"
-								src={tapeImg}
-								alt="tape2"
-								width="250"
-								height="250"
-							/>
-							<div className="tape-text">afasdf</div>
-						</div>
-						<div className="tape">
-							<img
-								className="tapeDisappear"
-								src={tapeImg}
-								alt="tape3"
-								width="250"
-								height="250"
-							/>
-							<div className="tape-text">afasdf</div>
-						</div>
+						<Link to="viewvent/">
+							<div className="tape">
+								<img
+									className="tapeDisappear"
+									src={tapeImg}
+									alt="tape1"
+									width="250"
+									height="250"
+								/>
+								<div className="tape-text">I can't get over my ex</div>
+							</div>
+						</Link>
+						<Link to="viewvent/">
+							<div className="tape">
+								<img
+									className="tapeDisappear"
+									src={tapeImg}
+									alt="tape2"
+									width="250"
+									height="250"
+								/>
+								<div className="tape-text">failing class</div>
+							</div>
+						</Link>
+						<Link to="viewvent/">
+							<div className="tape">
+								<img
+									className="tapeDisappear"
+									src={tapeImg}
+									alt="tape3"
+									width="250"
+									height="250"
+								/>
+								<div className="tape-text">can't stand my professor</div>
+							</div>
+						</Link>
 					</div>
 					<Link to="/recordvent">
 						<div id="record-button">
