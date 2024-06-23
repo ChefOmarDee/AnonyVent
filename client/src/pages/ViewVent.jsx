@@ -7,6 +7,7 @@ import React, {
 	useMemo,
 } from "react";
 import { UserContext } from "./UserContext";
+import "./ViewVent.css";
 
 const propDuration = 180;
 
@@ -19,7 +20,7 @@ const ViewVent = () => {
 
 	const s3_url = useMemo(
 		() =>
-			"https://anonyvent.s3.us-east-2.amazonaws.com/mp3file-1719100814230.mp3",
+			"https://anonyvent.s3.us-east-2.amazonaws.com/mp3file-1719153615293.mp3",
 		[]
 	);
 	const audioRef = useRef(new Audio(s3_url));
