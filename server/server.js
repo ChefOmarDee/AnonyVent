@@ -60,6 +60,9 @@ app.post('/upload', upload.single('mp3file'), (req, res) => {
         return res.status(400).send('No file uploaded.');
     }
 
+    const recordingTime = req.body.recordingTime; // Extract recording time from request body
+    console.log(`Recording Time: ${recordingTime} seconds`);
+
     const fileContent = fs.readFileSync(req.file.path);
     // const params = {
     //     Bucket: process.env.S3_BUCKET_NAME,
@@ -83,9 +86,10 @@ app.post('/upload', upload.single('mp3file'), (req, res) => {
     //         return res.status(500).send('Failed to upload file.');
     //     }
 
-        res.send(`File uploaded successfully. `);
+        res.send(`File uploaded successfully. Recording time: ${recordingTime} seconds`);
     // });
 });
+
 
 // Start the server
 app.listen(port, () => {

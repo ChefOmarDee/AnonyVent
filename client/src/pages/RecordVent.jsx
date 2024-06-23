@@ -11,6 +11,7 @@ const RecordVent = () => {
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
     const timerRef = useRef(null);
+    const finalRecordingTimeRef = useRef(0);
 
     useEffect(() => {
         if (isRecording && recordingTime >= 180) {
@@ -37,7 +38,6 @@ const RecordVent = () => {
                     setAudioBlob(audioBlob);
                     audioChunksRef.current = [];
                     clearInterval(timerRef.current);
-                    setRecordingTime(0);
                 };
 
                 mediaRecorderRef.current.start();
@@ -78,6 +78,8 @@ const RecordVent = () => {
             setIsRecording(false);
             setIsPaused(false);
             clearInterval(timerRef.current);
+            finalRecordingTimeRef.current = recordingTime; // Store the final recording time
+            console.log('Final recording time:', finalRecordingTimeRef.current); // Debugging
         }
     };
 
@@ -86,6 +88,7 @@ const RecordVent = () => {
             setIsUploading(true);
             const formData = new FormData();
             formData.append('mp3file', audioBlob, 'recording.mp3');
+            formData.append('recordingTime', finalRecordingTimeRef.current); // Use the stored final recording time
 
             try {
                 const response = await axios.post('http://localhost:8080/upload', formData, {
@@ -94,6 +97,7 @@ const RecordVent = () => {
                     }
                 });
                 console.log('File uploaded successfully:', response.data);
+                console.log('Uploaded recording time:', finalRecordingTimeRef.current); // Debugging
                 setAudioURL('');
                 setAudioBlob(null);
                 setIsUploading(false);
