@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 
-
-
 const RecordVent = () => {
     const [isRecording, setIsRecording] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
@@ -21,28 +19,34 @@ const RecordVent = () => {
     }, [recordingTime]);
 
     const startRecording = async () => {
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorderRef.current = new MediaRecorder(stream);
+        try {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorderRef.current = new MediaRecorder(stream);
 
-            mediaRecorderRef.current.ondataavailable = event => {
-                audioChunksRef.current.push(event.data);
-            };
+                mediaRecorderRef.current.ondataavailable = event => {
+                    if (event.data.size > 0) {
+                        audioChunksRef.current.push(event.data);
+                    }
+                };
 
-            mediaRecorderRef.current.onstop = () => {
-                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/mp3' });
-                const audioUrl = URL.createObjectURL(audioBlob);
-                setAudioURL(audioUrl);
-                setAudioBlob(audioBlob);
-                audioChunksRef.current = [];
-                clearInterval(timerRef.current);
-                setRecordingTime(0);
-            };
+                mediaRecorderRef.current.onstop = () => {
+                    const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/mp3' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    setAudioURL(audioUrl);
+                    setAudioBlob(audioBlob);
+                    audioChunksRef.current = [];
+                    clearInterval(timerRef.current);
+                    setRecordingTime(0);
+                };
 
-            mediaRecorderRef.current.start();
-            setIsRecording(true);
-            setIsPaused(false);
-            startTimer();
+                mediaRecorderRef.current.start();
+                setIsRecording(true);
+                setIsPaused(false);
+                startTimer();
+            }
+        } catch (error) {
+            console.error('Error accessing microphone:', error);
         }
     };
 
@@ -119,5 +123,4 @@ const RecordVent = () => {
     );
 };
 
-  
 export default RecordVent;
