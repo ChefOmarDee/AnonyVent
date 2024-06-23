@@ -1,80 +1,97 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext, useCallback, useMemo } from 'react';
+import { UserContext } from './UserContext';
+
+const propDuration = 180;
 
 const ViewVent = () => {
-  let s3_url = "https://anonyvent.s3.us-east-2.amazonaws.com/tempmp.mp3";
+    const { value } = useContext(UserContext); // Remove setValue since it's not used
+    
+    useEffect(() => {
+        console.log(value); // Log the context value only when it changes
+    }, [value]);
 
-  const audioRef = useRef(new Audio(s3_url));
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
+    const s3_url = useMemo(() => "https://anonyvent.s3.us-east-2.amazonaws.com/mp3file-1719100814230.mp3", []);
+    const audioRef = useRef(new Audio(s3_url));
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
+    const [hasDuration, setHasDuration] = useState(false);
+    const [duration, setDuration] = useState(propDuration);
 
-  useEffect(() => {
-      const audio = audioRef.current;
+    useEffect(() => {
+        const audio = audioRef.current;
 
-      const handleEnded = () => {
-          setIsPlaying(false);
-          setCurrentTime(0);
-      };
+        const handleEnded = () => {
+            setIsPlaying(false);
+            setCurrentTime(0);
+        };
 
-      const handleTimeUpdate = () => {
-          setCurrentTime(audio.currentTime);
-      };
+        const handleTimeUpdate = () => {
+            setCurrentTime(audio.currentTime);
+        };
 
-      const handleLoadedMetadata = () => {
-          setDuration(audio.duration);
-      };
+        const handleLoadedMetadata = () => {
+            const audioDuration = propDuration || audio.duration;
+            if (!isNaN(audioDuration) && audioDuration > 0) {
+                setHasDuration(true);
+                setDuration(audioDuration);
+            }
+            setIsLoading(false);
+        };
 
-      audio.addEventListener('ended', handleEnded);
-      audio.addEventListener('timeupdate', handleTimeUpdate);
-      audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.addEventListener('ended', handleEnded);
+        audio.addEventListener('timeupdate', handleTimeUpdate);
+        audio.addEventListener('loadedmetadata', handleLoadedMetadata);
 
-      return () => {
-          audio.removeEventListener('ended', handleEnded);
-          audio.removeEventListener('timeupdate', handleTimeUpdate);
-          audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      };
-  }, []);
+        return () => {
+            audio.removeEventListener('ended', handleEnded);
+            audio.removeEventListener('timeupdate', handleTimeUpdate);
+            audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        };
+    }, []);
 
-  const handleAudioPlayPause = () => {
-      const audio = audioRef.current;
-      if (isPlaying) {
-          audio.pause();
-      } else {
-          audio.play();
-      }
-      setIsPlaying(!isPlaying);
-  };
+    const handleAudioPlayPause = useCallback(() => {
+        const audio = audioRef.current;
+        if (isPlaying) {
+            audio.pause();
+        } else {
+            audio.play();
+        }
+        setIsPlaying(!isPlaying);
+    }, [isPlaying]);
 
-  const handleSeek = (e) => {
-      const audio = audioRef.current;
-      const newTime = e.target.value;
-      audio.currentTime = newTime;
-      setCurrentTime(newTime);
-  };
+    const handleSeek = useCallback((e) => {
+        const audio = audioRef.current;
+        const scrollValue = e.target.value;
+        const newTime = (scrollValue / 100) * duration; // Scale based on duration
+        audio.currentTime = newTime;
+        setCurrentTime(newTime);
+    }, [duration]);
 
-  return (
-      <div className="AudioFileListItem">
-          <div className="AudioFileListElements">
-              <a href="javascript:void(0);" onClick={handleAudioPlayPause}>
-                  <span className="AudioFilePlayButton">
-                      <box-icon name={isPlaying ? "pause-circle" : "play-circle"} color="#ffffff" size="sm"></box-icon>
-                  </span>
-                  <span>{isPlaying ? "Pause" : "Play"}</span>
-              </a>
-              <input
-                  type="range"
-                  min="0"
-                  max={duration}
-                  value={currentTime}
-                  onChange={handleSeek}
-                  style={{ width: '100%' }}
-              />
-              <span>{Math.floor(currentTime)} / {Math.floor(duration)} sec</span>
-          </div>
-      </div>
-  );
+    return (
+        <div className="AudioFileListItem">
+            <div className="AudioFileListElements">
+                <button onClick={handleAudioPlayPause}>
+                    <span className="AudioFilePlayButton">
+                        <box-icon name={isPlaying ? "pause-circle" : "play-circle"} color="#ffffff" size="sm"></box-icon>
+                    </span>
+                    <span>{isPlaying ? "Pause" : "Play"}</span>
+                </button>
+                <input
+                    type="range"
+                    min="0"
+                    max="100" // Set range to 100 for scaling
+                    value={(currentTime / duration) * 100} // Scale current time
+                    onChange={handleSeek}
+                    style={{ width: '50%' }} // Set width to 50%
+                    disabled={isLoading || !hasDuration}
+                />
+                <span>
+                    {isLoading ? 'Loading...' : (hasDuration ? `${Math.floor(currentTime)} / ${Math.floor(duration)} sec` : 'Duration unavailable')}
+                </span>
+            </div>
+        </div>
+    );
+};
 
-  };
-  
-  export default ViewVent;
-
+export default ViewVent;
