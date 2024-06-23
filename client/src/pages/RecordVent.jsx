@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import pauseImg from "../images/pause-button.png";
 
 const RecordVent = () => {
 	const [isRecording, setIsRecording] = useState(false);
@@ -147,10 +148,11 @@ const RecordVent = () => {
 		<div>
 			<h1>Audio Recorder</h1>
 			<button onClick={startRecording} disabled={isRecording}>
+				{" "}
 				Start Recording
 			</button>
 			<button onClick={pauseRecording} disabled={!isRecording || isPaused}>
-				Pause Recording
+				Pause
 			</button>
 			<button onClick={resumeRecording} disabled={!isRecording || !isPaused}>
 				Resume Recording
