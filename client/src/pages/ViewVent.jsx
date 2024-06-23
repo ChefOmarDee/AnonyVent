@@ -1,119 +1,132 @@
 import React, {
-	useState,
-	useRef,
-	useEffect,
-	useContext,
 	useCallback,
-	useMemo,
+	useContext,
+	useEffect,
+	useRef,
+	useState
 } from "react";
+import { useParams } from 'react-router-dom';
 import { UserContext } from "./UserContext";
 
-const propDuration = 180;
-
 const ViewVent = () => {
-	const { value } = useContext(UserContext); // Remove setValue since it's not used
+    let { userId } = useParams();
 
-	useEffect(() => {
-		console.log(value); // Log the context value only when it changes
-	}, [value]);
+    const { value } = useContext(UserContext);
+    
+    const [s3_url, setS3Url] = useState("");
+    const [title, setTitle] = useState("");
+    const [transcription, setTranscription] = useState("");
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
+    const [hasDuration, setHasDuration] = useState(false);
+    const [duration, setDuration] = useState(2);
 
-	const s3_url = useMemo(
-		() =>
-			"https://anonyvent.s3.us-east-2.amazonaws.com/mp3file-1719100814230.mp3",
-		[]
-	);
-	const audioRef = useRef(new Audio(s3_url));
-	const [isPlaying, setIsPlaying] = useState(false);
-	const [currentTime, setCurrentTime] = useState(0);
-	const [isLoading, setIsLoading] = useState(true);
-	const [hasDuration, setHasDuration] = useState(false);
-	const [duration, setDuration] = useState(propDuration);
+    useEffect(() => {
+        if (value && value.docs) {
+            const foundItem = value.docs.find(doc => doc._id === userId);
+            if (foundItem) {
+                setS3Url(foundItem.url);
+                setTitle(foundItem.title);
+                setTranscription(foundItem.transcription);
+                setDuration(parseInt(foundItem.length, 10));
+            }
+        }
+    }, [value, userId]);
 
-	useEffect(() => {
-		const audio = audioRef.current;
+    const audioRef = useRef(new Audio(s3_url));
 
-		const handleEnded = () => {
-			setIsPlaying(false);
-			setCurrentTime(0);
-		};
+    useEffect(() => {
+        if (s3_url) {
+            audioRef.current.src = s3_url;
+        }
 
-		const handleTimeUpdate = () => {
-			setCurrentTime(audio.currentTime);
-		};
+        const audio = audioRef.current;
 
-		const handleLoadedMetadata = () => {
-			const audioDuration = propDuration || audio.duration;
-			if (!isNaN(audioDuration) && audioDuration > 0) {
-				setHasDuration(true);
-				setDuration(audioDuration);
-			}
-			setIsLoading(false);
-		};
+        const handleEnded = () => {
+            setIsPlaying(false);
+            setCurrentTime(0);
+        };
 
-		audio.addEventListener("ended", handleEnded);
-		audio.addEventListener("timeupdate", handleTimeUpdate);
-		audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+        const handleTimeUpdate = () => {
+            setCurrentTime(audio.currentTime);
+        };
 
-		return () => {
-			audio.removeEventListener("ended", handleEnded);
-			audio.removeEventListener("timeupdate", handleTimeUpdate);
-			audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
-		};
-	}, []);
+        const handleLoadedMetadata = () => {
+            const audioDuration = duration || audio.duration;
+            if (!isNaN(audioDuration) && audioDuration > 0) {
+                setHasDuration(true);
+                setDuration(audioDuration);
+            }
+            setIsLoading(false);
+        };
 
-	const handleAudioPlayPause = useCallback(() => {
-		const audio = audioRef.current;
-		if (isPlaying) {
-			audio.pause();
-		} else {
-			audio.play();
-		}
-		setIsPlaying(!isPlaying);
-	}, [isPlaying]);
+        audio.addEventListener("ended", handleEnded);
+        audio.addEventListener("timeupdate", handleTimeUpdate);
+        audio.addEventListener("loadedmetadata", handleLoadedMetadata);
 
-	const handleSeek = useCallback(
-		(e) => {
-			const audio = audioRef.current;
-			const scrollValue = e.target.value;
-			const newTime = (scrollValue / 100) * duration; // Scale based on duration
-			audio.currentTime = newTime;
-			setCurrentTime(newTime);
-		},
-		[duration]
-	);
+        return () => {
+            audio.removeEventListener("ended", handleEnded);
+            audio.removeEventListener("timeupdate", handleTimeUpdate);
+            audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+        };
+    }, [s3_url, duration]);
 
-	return (
-		<div className="AudioFileListItem">
-			<div className="AudioFileListElements">
-				<button onClick={handleAudioPlayPause}>
-					<span className="AudioFilePlayButton">
-						<box-icon
-							name={isPlaying ? "pause-circle" : "play-circle"}
-							color="#ffffff"
-							size="sm"
-						></box-icon>
-					</span>
-					<span>{isPlaying ? "Pause" : "Play"}</span>
-				</button>
-				<input
-					type="range"
-					min="0"
-					max="100" // Set range to 100 for scaling
-					value={(currentTime / duration) * 100} // Scale current time
-					onChange={handleSeek}
-					style={{ width: "50%" }} // Set width to 50%
-					disabled={isLoading || !hasDuration}
-				/>
-				<span>
-					{isLoading
-						? "Loading..."
-						: hasDuration
-						? `${Math.floor(currentTime)} / ${Math.floor(duration)} sec`
-						: "Duration unavailable"}
-				</span>
-			</div>
-		</div>
-	);
+    const handleAudioPlayPause = useCallback(() => {
+        const audio = audioRef.current;
+        if (isPlaying) {
+            audio.pause();
+        } else {
+            audio.play();
+        }
+        setIsPlaying(!isPlaying);
+    }, [isPlaying]);
+
+    const handleSeek = useCallback(
+        (e) => {
+            const audio = audioRef.current;
+            const scrollValue = e.target.value;
+            const newTime = (scrollValue / 100) * duration;
+            audio.currentTime = newTime;
+            setCurrentTime(newTime);
+        },
+        [duration]
+    );
+
+    return (
+        <div className="AudioFileListItem">
+            <div className="AudioFileListElements">
+                <h1>{title}</h1>
+                <button onClick={handleAudioPlayPause}>
+                    <span className="AudioFilePlayButton">
+                        <box-icon
+                            name={isPlaying ? "pause-circle" : "play-circle"}
+                            color="#ffffff"
+                            size="sm"
+                        ></box-icon>
+                    </span>
+                    <span>{isPlaying ? "Pause" : "Play"}</span>
+                </button>
+                <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={(currentTime / duration) * 100}
+                    onChange={handleSeek}
+                    style={{ width: "50%" }}
+                    disabled={isLoading || !hasDuration}
+                />
+                <span>
+                    {isLoading
+                        ? "Loading..."
+                        : hasDuration
+                        ? `${Math.floor(currentTime)} / ${Math.floor(duration)} sec`
+                        : "Duration unavailable"}
+                </span>
+                <p>{transcription}</p>
+            </div>
+        </div>
+    );
 };
 
 export default ViewVent;
