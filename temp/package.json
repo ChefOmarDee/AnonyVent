@@ -1,6 +1,9 @@
 {
   "dependencies": {
+    "assemblyai": "^4.5.0",
+    "dotenv": "^16.4.5",
     "mongodb": "^6.7.0",
-    "mongoose": "^8.4.3"
+    "mongoose": "^8.4.3",
+    "openai": "^4.52.0"
   }
 }
