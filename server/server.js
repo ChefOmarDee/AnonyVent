@@ -4,7 +4,6 @@ const AWS = require("aws-sdk");
 const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
-const cors = require("cors");
 const dotenv = require("dotenv").config();
 const { MongoClient } = require('mongodb');
 // MongoDB connection string
@@ -39,8 +38,6 @@ async function main() {
 
 
 // Start the server
-
-=======
 
 (async () => {
 	const fetch = (await import("node-fetch")).default;
