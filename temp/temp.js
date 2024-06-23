@@ -3,51 +3,17 @@ dotenv.config();
 
 const fs = require('fs');
 const OpenAI = require('openai');
+const fetch = require('node-fetch'); // Add this line to import node-fetch
+global.fetch = fetch;
 
 const OpenAIKey=process.env.OPENAI_KEY;
 const openai = new OpenAI({apiKey: OpenAIKey});
-const FormData = require("form-data");
-const path = require("path");
-const filePath = path.join(__dirname, "t.mp3");
-const { MongoClient } = require('mongodb');
+// const FormData = require("form-data");
+// const path = require("path");
+// const filePath = path.join(__dirname, "t.mp3");
 
-async function main() {
-    /**
-     * Connection URI. Update <username>, <password>, and <your-cluster-url> to reflect your cluster.
-     * See https://docs.mongodb.com/ecosystem/drivers/node/ for more details
-     */
-    const uri = process.env.CONNECTION_STR; 
-    const client = new MongoClient(uri);
-   try {
-    //connect to mongodb cluster
-    await client.connect();
-    const database = client.db('AnonyVent');
-    // Access the collection
-    const collection = database.collection('Vents');
-    const randomDocuments = await collection.aggregate([ { $sample: { size: 3 } } ]).toArray();
-    const titles = randomDocuments.map(randomDocuments => randomDocuments.title);
-    console.log(titles);
-    // const findResult = await collection.find().toArray();
-    // console.log(findResult);
-    // findResult.forEach(doc => {
-    //     console.log('Document:');
-    //     for (const [key, value] of Object.entries(doc)) {
-    //         console.log(`  ${key}: ${value}`);
-    //     }
-    // });
-    //console.log(findResult);
 
-   }
-   catch(e) {
-    console.log(e);
-   }
-   finally {
-    await client.close();
-   }
-   
-}
 
-//main().catch(console.error);
 
 const {AssemblyAI} = require('assemblyai');
 
@@ -56,7 +22,7 @@ const client = new AssemblyAI({
   apiKey: ASSKEY,
 });
 
-const audioUrl = 'https://anonyvent.s3.us-east-2.amazonaws.com/mp3file-1719100814230.mp3'
+const audioUrl = 'https://anonyvent.s3.us-east-2.amazonaws.com/mp3file-1719148676037.mp3'
 
 const config = {
   audio_url: audioUrl
@@ -64,13 +30,15 @@ const config = {
 
  const getTranscription = async () => {
    const transcript = await client.transcripts.transcribe(config)
-   return transcript.text;
+   console.log(transcript.text);
  }
 
+ getTranscription();
 
 
 async function gptChecker() {
     const transcription = await getTranscription();
+    console.log(transcription);
     const rules = "If the following transcription mentions sex, not including fuck in an upset manner, murdering someone, or mentions gravely hurting someone return true, if not then return false: ";
     const prompt = rules.concat(transcription);
   const completion = await openai.completions.create({
@@ -82,6 +50,7 @@ async function gptChecker() {
 
   const redFlag = completion.choices[0].text;
   return redFlag;
+  //console.log(redFlag);
   //let cleanedText = text.replace(/\n/g, '');
   //console.log(cleanedText);
 
