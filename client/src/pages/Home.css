@@ -14,12 +14,9 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center; /* Center items horizontally */
+    padding: 20px;
 }
-.tape:hover .tape-text {
-    opacity: 1;
-  }
-  
-/* Inside your Home.css or a separate CSS file: */
+
 .tape-text {
     opacity: 0;
     transition: opacity 0.3s;
@@ -29,15 +26,14 @@ main {
     transform: translate(-50%, -50%); /* Center the text */
     font-size: 16px; /* Customize font size */
     color: black; /* Customize text color */
-  }
-  
-  
+}
 
 #tapes {
     position: relative;
     display: flex;
-    justify-content: space-between;
-    width: 80%;
+    flex-wrap: wrap; /* Allow wrapping */
+    justify-content: center; /* Center items */
+    width: 100%;
     margin: auto;
     overflow: hidden;
 }
@@ -46,30 +42,25 @@ main {
     position: relative;
     padding: 20px;
     text-align: center;
-    flex: 1;
-    margin: 0 10px;
+    flex: 1 1 250px; /* Flex-grow, flex-shrink, and flex-basis */
+    margin: 10px;
     transition: background-color 0.3s, transform 0.3s;
+    max-width: 250px;
 }
-.tapeDisappear:hover {
+
+.tape:hover .tapeDisappear, .tape-hover .tapeDisappear {
     opacity: 0;
 }
+
+.tape:hover .tape-text, .tape-hover .tape-text {
+    opacity: 1;
+}
+
 .tape img {
     width: 100%;
     height: auto;
     object-fit: cover;
     border-radius: 10px;
-}
-/* 
-.tape:hover {
-    opacity: 0;
-} */
-
-.tape:first-child {
-    margin-left: 0; /* Remove margin from the first box */
-}
-
-.tape:last-child {
-    margin-right: 0; /* Remove margin from the last box */
 }
 
 #record-button {
@@ -88,4 +79,37 @@ main {
 #record-button img {
     width: 50px;
     height: 50px;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 768px) {
+    .tape {
+        flex: 1 1 200px; /* Adjust flex-basis for smaller screens */
+        max-width: 200px;
+    }
+
+    .tape-text {
+        font-size: 14px; /* Adjust font size */
+    }
+}
+
+@media (max-width: 480px) {
+    .tape {
+        flex: 1 1 150px; /* Adjust flex-basis for very small screens */
+        max-width: 150px;
+    }
+
+    .tape-text {
+        font-size: 12px; /* Adjust font size */
+    }
+
+    #record-button {
+        width: 60px;
+        height: 60px;
+    }
+
+    #record-button img {
+        width: 30px;
+        height: 30px;
+    }
 }

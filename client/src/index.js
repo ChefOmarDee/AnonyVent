@@ -19,7 +19,7 @@ export default function App() {
 						<Route path="recordvent" element={<RecordVent />} />
 						<Route path="viewvent">
 							<Route path=":userId" element={<ViewVent />} />
-							<Route path="/viewvent/" element={<ViewVent />}/>
+							<Route path="/viewvent/" element={<ViewVent />} />
 						</Route>
 						<Route path="*" element={<NoPage />} />
 					</Route>
