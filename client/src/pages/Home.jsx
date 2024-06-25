@@ -34,7 +34,7 @@ const Home = () => {
 	};
 
 	// Print the context value to the console
-	console.log("Context value:", value);
+	// console.log("Context value:", value);
 
 	return (
 		<>

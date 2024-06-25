@@ -121,7 +121,11 @@ const ViewVent = () => {
 					type="range"
 					min="0"
 					max="100"
-					value={(state.currentTime / state.duration) * 100}
+					value={
+						state.hasDuration && state.duration > 0
+							? (state.currentTime / state.duration) * 100
+							: 0
+					}
 					onChange={handleSeek}
 					style={{ width: "50%" }}
 					disabled={state.isLoading || !state.hasDuration}
