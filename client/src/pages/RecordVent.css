@@ -1,0 +1,75 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 80vh; /* Adjusted height to prevent overflow */
+	text-align: center;
+}
+
+.recording-controls {
+    display: flex;
+    justify-content: space-between; /* To space the buttons and time message */
+    align-items: center;
+    margin-top: 20px; /* Adjust as needed for spacing */
+}
+
+.recording-time {
+margin-left: 20px; /* Adjust margin between buttons and time message */
+}
+
+
+.initial-message {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 60%; /* Adjusted height to prevent overflow */
+}
+
+.record-button {
+	position: absolute;
+	bottom: 5%; /* Adjusted position to be closer to the bottom */
+	padding: 8px 16px; /* Adjusted padding for compactness */
+	font-size: 16px; /* Adjusted font size for compactness */
+}
+
+.vent-message {
+	font-size: 24px; /* Font size for the "Vent it out" message */
+	margin: 20px 0; /* Margin to position it nicely */
+}
+
+.preview {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.preview-buttons {
+	display: flex;
+	justify-content: center;
+	gap: 10px; /* Space between buttons */
+	margin-top: 10px; /* Margin to separate buttons from other elements */
+}
+
+h2 {
+	margin-top: 8px; /* Adjusted margin for compactness */
+}
+
+audio {
+	margin-top: 8px; /* Adjusted margin for compactness */
+}
+
+input {
+	margin-top: 8px; /* Adjusted margin for compactness */
+	padding: 4px; /* Adjusted padding for compactness */
+}
+
+button {
+	margin-top: 8px; /* Adjusted margin for compactness */
+	padding: 8px 16px; /* Adjusted padding for compactness */
+}
+
+p {
+    margin-top: 8px; 
+}
