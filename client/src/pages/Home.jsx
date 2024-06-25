@@ -4,10 +4,12 @@ import micImg from "../images/mic-1-removebg-preview (1).png";
 import tapeImg from "../images/retro-tape-icon.png";
 import "./Home.css";
 import { UserContext } from "./UserContext";
+import refreshImg from "../images/refresh-button-removebg-preview.png";
 
 const Home = () => {
 	const { value, setValue } = useContext(UserContext);
 	const [docs, setDocs] = useState(value.docs || []);
+    const [isClicked, setIsClicked] = useState(false);
 
 	const fetchDocs = async () => {
 		try {
@@ -35,7 +37,6 @@ const Home = () => {
 
 	// Print the context value to the console
 	console.log("Context value:", value);
-
 	return (
 		<>
 			<main>
@@ -56,13 +57,18 @@ const Home = () => {
 							</Link>
 						))}
 					</div>
-					<Link to="/recordvent">
-						<div id="record-button">
-							<img src={micImg} alt="mic-image" />
-						</div>
-					</Link>
-					<button onClick={handleFetchNewItems}>New Items</button>
-				</div>
+					</div>
+					<div id="btns-container">
+						<button onClick={handleFetchNewItems} id="refresh-button" className="btn">
+							<img src={refreshImg} alt="refreshBtn"></img>
+						</button>
+						<Link to="/recordvent">
+							<div id="record-button" className="btn">
+								<img src={micImg} alt="mic-image" />
+							</div>
+						</Link>
+					</div>
+				
 			</main>
 		</>
 	);
