@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import pauseImg from "../images/pause-button.png";
+import micImg from "../images/mic-1-removebg-preview (1).png";
+
 import "./RecordVent.css"; // Import the CSS file for styling
 
 const RecordVent = () => {
