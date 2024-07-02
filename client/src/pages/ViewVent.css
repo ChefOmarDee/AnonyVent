@@ -1,0 +1,52 @@
+.AudioFileListItem {
+    border: 1px solid black;
+    margin: 1rem;
+    padding: 2rem 2rem;
+    text-align: center;
+}
+
+.inside-boxes {
+    display: inline-block;
+    padding: 2rem 2rem;
+    vertical-align: middle;
+    width: 40%;
+}
+
+#right-box {
+    background-color: white;
+    color: black;
+    border-radius: 25px;
+    font-size: 30px;
+}
+
+#left-box .img{
+   width: 100%;
+}
+
+.playPause {
+    background-color: transparent;
+    border: none;
+    width: 40%;
+    padding: 0px;
+}
+
+.playPause img {
+    width: 20%;
+    height: 20%;
+}
+
+.audio-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .playback-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+  
+  .playback-container input[type="range"] {
+    width: 100%;
+  }
