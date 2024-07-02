@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import pauseImg from "../images/pause-button.png";
-import micImg from "../images/mic-1-removebg-preview (1).png";
-
+import micImg from "../images/mic-button.png";
+import stopImg from "../images/stop-button.png";
+import resumeImg from "../images/play-button.png";
 import "./RecordVent.css"; // Import the CSS file for styling
 
 const RecordVent = () => {
@@ -15,7 +16,6 @@ const RecordVent = () => {
 	const [uploadingResponse, setUploadingResponse] = useState("");
 	const [processing, setProcessing] = useState(false); // State for processing state
 	const [title, setTitle] = useState(""); // State for recording title
-	const [showResponse, setShowResponse] = useState(false); // State to show response message
 	const mediaRecorderRef = useRef(null);
 	const audioChunksRef = useRef([]);
 	const timerRef = useRef(null);
@@ -136,15 +136,10 @@ const RecordVent = () => {
 				setAudioURL("");
 				setAudioBlob(null);
 				setProcessing(false); // End processing state
-				setShowResponse(true); // Show the response message
 			} catch (error) {
 				console.error("Error uploading file:", error);
 				setProcessing(false); // End processing state on error
 			}
-
-			setTimeout(() => {
-				setShowResponse(false); // Clear response after 7 seconds
-			}, 7000);
 		}
 	};
 
@@ -156,7 +151,6 @@ const RecordVent = () => {
 		setRecordingTime(0);
 		setTitle("");
 		setUploadingResponse("");
-		setShowResponse(false);
 		startRecording(); // Start new recording immediately
 	};
 
@@ -164,34 +158,35 @@ const RecordVent = () => {
 		<div className="container">
 			{!isRecording && !audioURL && (
 				<div className="initial-message">
-					<p>
-						Speak, Release, and Let Go Of Your Issues, 3 Minutes At A time, Gone
-						Tomorrow.
-					</p>
+					<p className="user-message">Speak,</p>
 					<button className="record-button" onClick={startRecording}>
-						Start Recording
+						<img src={micImg} alt="Start Recording" />
 					</button>
 				</div>
 			)}
-			{isRecording && <p className="vent-message">Vent it out</p>}
+			{isRecording && <p className="vent-message">Vent it all OUT</p>}
 			{(isRecording || audioURL) && (
 				<div>
 					{isRecording && (
 						<div className="recording-controls">
-							<div>
-								{isPaused ? (
-									<button onClick={resumeRecording}>Resume Recording</button>
-								) : (
-									<button onClick={pauseRecording}>Pause</button>
-								)}
-								<button onClick={stopRecording}>Stop Recording</button>
-							</div>
-							<div className="recording-time">
-								<p>
-									Recording Time: {Math.floor(recordingTime / 60)}:
-									{("0" + (recordingTime % 60)).slice(-2)} (Max: 3:00)
-								</p>
-							</div>
+							<button
+								className="pause-resume-button"
+								onClick={isPaused ? resumeRecording : pauseRecording}
+							>
+								<img
+									src={isPaused ? resumeImg : pauseImg}
+									alt={isPaused ? "Resume Recording" : "Pause Recording"}
+								/>
+							</button>
+							<div className="button-spacer"></div>
+							<button className="stop-button" onClick={stopRecording}>
+								<img src={stopImg} alt="Stop Recording" />
+							</button>
+							<div className="button-spacer"></div>
+							<p className="recording-time">
+								{Math.floor(recordingTime / 60)}:
+								{("0" + (recordingTime % 60)).slice(-2)}
+							</p>
 						</div>
 					)}
 
@@ -199,23 +194,32 @@ const RecordVent = () => {
 						<div className="preview">
 							<input
 								type="text"
+								className="title-input"
 								placeholder="Enter recording title"
 								value={title}
 								onChange={(e) => setTitle(e.target.value)}
 							/>
+							<br />
+							<br />
 							<audio controls src={audioURL}></audio>
+							<br />
+							<br />
 							<div className="preview-buttons">
-								<button onClick={startNewRecording} disabled={isRecording}>
+								<button
+									className="new-recording-button"
+									onClick={startNewRecording}
+									disabled={isRecording}
+								>
 									New Recording
 								</button>
 								<button
+									className="submit-recording-button"
 									onClick={uploadAudio}
 									disabled={isUploading || processing}
 								>
 									{processing ? "Processing..." : "Upload Recording"}
 								</button>
 							</div>
-							{showResponse && <p>{uploadingResponse}</p>}
 						</div>
 					)}
 				</div>
