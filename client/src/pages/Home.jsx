@@ -34,13 +34,24 @@ const Home = () => {
 		fetchDocs();
 	};
 
+	console.log("Context value:", value);
+
+	if (isLoading) {
+		return (
+			<div className="loading-screen">
+				<div className="loading-spinner"></div>
+				<p className="loading-text">Loading your tapes...</p>
+			</div>
+		);
+	}
+
 	return (
 		<>
 			<main>
 				<div id="tapes-container">
 					<div id="tapes" style={{ position: "relative" }}>
 						{docs.map((doc, index) => (
-							<Link to={"viewvent/" + doc._id} key={index}>
+							<Link to={`viewvent/${doc._id}`} key={index}>
 								<div className="tape">
 									<img
 										className="tapeDisappear"
@@ -54,12 +65,20 @@ const Home = () => {
 							</Link>
 						))}
 					</div>
+				</div>
+				<div id="btns-container">
+					<button
+						onClick={handleFetchNewItems}
+						id="refresh-button"
+						className="btn"
+					>
+						<img src={refreshImg} alt="refreshBtn" />
+					</button>
 					<Link to="/recordvent">
-						<div id="record-button">
+						<div id="record-button" className="btn">
 							<img src={micImg} alt="mic-image" />
 						</div>
 					</Link>
-					<button onClick={handleFetchNewItems}>New Items</button>
 				</div>
 			</main>
 		</>

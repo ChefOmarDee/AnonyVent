@@ -1,0 +1,138 @@
+.AudioFileListItem {
+    padding: 1rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 70vh;
+  }
+  
+  .content-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .inside-boxes {
+    padding: 1rem;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 1rem;
+  }
+  
+  #right-box {
+    background-color: white;
+    color: black;
+    border-radius: 15px;
+    margin-bottom: 10vh;
+  }
+  
+  .tape-recorder-img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .audio-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .playPause {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+  }
+  
+  .playPause img {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .playback-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 200px;
+  }
+  
+  .playback-container input[type="range"] {
+    width: 100%;
+  }
+  
+  .playback-time {
+    font-size: 14px;
+  }
+  
+  .transcription-container {
+    height: 9em;
+    overflow-y: auto;
+    padding-right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .transcription-text {
+    font-size: 20px;
+    line-height: 1.5;
+    margin: 0;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .transcription-container::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .transcription-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  .transcription-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+  
+  .transcription-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+  
+  @media (min-width: 768px) {
+    .content-wrapper {
+      flex-direction: row;
+      align-items: center;
+    }
+  
+    .inside-boxes {
+      width: 45%;
+      margin: 0 1rem;
+    }
+  
+    #right-box {
+      font-size: 18px;
+      margin-bottom: 0vh;
+    }
+  
+    .playPause img {
+      width: 40px;
+      height: 40px;
+    }
+  
+    .playback-time {
+      font-size: 16px;
+    }
+  
+    .transcription-container {
+      height: 12em;
+    }
+  
+    .transcription-text {
+      font-size: 20px;
+    }
+  }

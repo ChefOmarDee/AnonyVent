@@ -1,10 +1,20 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+	useCallback,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { useParams } from "react-router-dom";
+import pauseButton from "../images/pause-button-new.png";
+import playButton from "../images/play-button-new.png";
+import tapeRecorder from "../images/tape-recorder-gif.gif";
+import { UserContext } from "./UserContext";
 import "./ViewVent.css";
 
 const ViewVent = () => {
 	let { userId } = useParams();
-
+	const { value } = useContext(UserContext);
 	const [state, setState] = useState({
 		s3_url: "",
 		title: "",
@@ -23,9 +33,9 @@ const ViewVent = () => {
 	};
 
 	useEffect(() => {
-		const storedDocs = JSON.parse(localStorage.getItem("docs"));
-		if (storedDocs && storedDocs.length > 0) {
-			const foundItem = storedDocs.find((doc) => doc._id === userId);
+		if (value && value.docs) {
+			console.log(value);
+			const foundItem = value.docs.find((doc) => doc._id === userId);
 			if (foundItem) {
 				handleStateUpdate({
 					s3_url: foundItem.url,
@@ -36,7 +46,7 @@ const ViewVent = () => {
 				});
 			}
 		}
-	}, [userId]);
+	}, [value, userId]);
 
 	useEffect(() => {
 		const audio = audioRef.current;
@@ -97,41 +107,45 @@ const ViewVent = () => {
 
 	return (
 		<div className="AudioFileListItem">
-			<div className="AudioFileListElements">
-				<h1>{state.title}</h1>
-				<button onClick={handleAudioPlayPause}>
-					<span className="AudioFilePlayButton">
-						<box-icon
-							name={state.isPlaying ? "pause-circle" : "play-circle"}
-							color="#ffffff"
-							size="sm"
-						></box-icon>
-					</span>
-					<span>{state.isPlaying ? "Pause" : "Play"}</span>
-				</button>
-				<input
-					type="range"
-					min="0"
-					max="100"
-					value={
-						state.hasDuration && state.duration > 0
-							? (state.currentTime / state.duration) * 100
-							: 0
-					}
-					onChange={handleSeek}
-					style={{ width: "50%" }}
-					disabled={state.isLoading || !state.hasDuration}
-				/>
-				<span>
-					{state.isLoading
-						? "Loading..."
-						: state.hasDuration
-						? `${Math.floor(state.currentTime)} / ${Math.floor(
-								state.duration
-						  )} sec`
-						: "Duration unavailable"}
-				</span>
-				<p>{state.transcription}</p>
+			<div className="content-wrapper">
+				<div className="inside-boxes" id="left-box">
+					<div className="AudioFileListElements">
+						<img src={tapeRecorder} alt="" className="tape-recorder-img" />
+						<h1>{state.title}</h1>
+						<div className="audio-controls">
+							<button className="playPause" onClick={handleAudioPlayPause}>
+								<img
+									src={state.isPlaying ? pauseButton : playButton}
+									alt={state.isPlaying ? "Pause" : "Play"}
+								/>
+							</button>
+							<div className="playback-container">
+								<input
+									type="range"
+									min="0"
+									max="100"
+									value={(state.currentTime / state.duration) * 100}
+									onChange={handleSeek}
+									disabled={state.isLoading || !state.hasDuration}
+								/>
+								<span className="playback-time">
+									{state.isLoading
+										? "Loading..."
+										: state.hasDuration
+										? `${Math.floor(state.currentTime)} / ${Math.floor(
+												state.duration
+										  )} sec`
+										: "Duration unavailable"}
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div className="inside-boxes" id="right-box">
+					<div className="transcription-container">
+						<p className="transcription-text">{state.transcription}</p>
+					</div>
+				</div>
 			</div>
 		</div>
 	);
