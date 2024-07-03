@@ -1,13 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import micImg from "../images/mic-1-removebg-preview (1).png";
+import micImg from "../images/mic-button.png";
 import tapeImg from "../images/retro-tape-icon.png";
 import "./Home.css";
-import { UserContext } from "./UserContext";
 
 const Home = () => {
-	const { value, setValue } = useContext(UserContext);
-	const [docs, setDocs] = useState(value.docs || []);
+	const [docs, setDocs] = useState([]);
 
 	const fetchDocs = async () => {
 		try {
@@ -17,24 +15,24 @@ const Home = () => {
 			}
 			const data = await response.json();
 			setDocs(data);
-			setValue({ ...value, docs: data }); // Update UserContext with fetched data
+			localStorage.setItem("docs", JSON.stringify(data)); // Store data in localStorage
 		} catch (error) {
 			console.error("Error fetching data:", error);
 		}
 	};
 
 	useEffect(() => {
-		if (!value.docs || value.docs.length === 0) {
+		const storedDocs = JSON.parse(localStorage.getItem("docs"));
+		if (storedDocs && storedDocs.length > 0) {
+			setDocs(storedDocs);
+		} else {
 			fetchDocs();
 		}
-	}, []); // Empty dependency array ensures this effect runs only once
+	}, []);
 
 	const handleFetchNewItems = () => {
 		fetchDocs();
 	};
-
-	// Print the context value to the console
-	// console.log("Context value:", value);
 
 	return (
 		<>

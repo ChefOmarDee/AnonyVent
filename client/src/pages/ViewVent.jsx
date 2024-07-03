@@ -1,18 +1,9 @@
-import React, {
-	useCallback,
-	useContext,
-	useEffect,
-	useRef,
-	useState,
-	useMemo,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { UserContext } from "./UserContext";
 import "./ViewVent.css";
 
 const ViewVent = () => {
 	let { userId } = useParams();
-	const { value } = useContext(UserContext);
 
 	const [state, setState] = useState({
 		s3_url: "",
@@ -32,8 +23,9 @@ const ViewVent = () => {
 	};
 
 	useEffect(() => {
-		if (value && value.docs) {
-			const foundItem = value.docs.find((doc) => doc._id === userId);
+		const storedDocs = JSON.parse(localStorage.getItem("docs"));
+		if (storedDocs && storedDocs.length > 0) {
+			const foundItem = storedDocs.find((doc) => doc._id === userId);
 			if (foundItem) {
 				handleStateUpdate({
 					s3_url: foundItem.url,
@@ -44,7 +36,7 @@ const ViewVent = () => {
 				});
 			}
 		}
-	}, [value, userId]);
+	}, [userId]);
 
 	useEffect(() => {
 		const audio = audioRef.current;

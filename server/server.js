@@ -5,9 +5,10 @@ const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 const dotenv = require("dotenv").config();
-const { MongoClient } = require('mongodb');
-// MongoDB connection string
-const uri = process.env.CONNECTION_STR; 
+const { MongoClient } = require("mongodb");
+const cron = require("node-cron");
+
+const uri = process.env.CONNECTION_STR;
 const client = new MongoClient(uri);
 
 const app = express();
@@ -17,28 +18,25 @@ const port = 8080;
 app.use(cors());
 
 async function main() {
-  try {
-    // Connect to MongoDB cluster
-    await client.connect();
-    const database = client.db('AnonyVent');
-    // Access the collection
-    const collection = database.collection('Vents');
-    const randomDocuments = await collection.aggregate([{ $sample: { size: 3 } }]).toArray();
-    //const titles = randomDocuments.map(doc => doc.title);
-	//console.log(titles);
-	console.log(randomDocuments);
-    return randomDocuments;
-  } catch (e) {
-    console.log(e);
-    throw e; // Re-throw the error to be caught by the caller
-  } finally {
-    await client.close();
-  }
+	try {
+		// Connect to MongoDB cluster
+		await client.connect();
+		const database = client.db("AnonyVent");
+		const collection = database.collection("Vents");
+		const randomDocuments = await collection
+			.aggregate([{ $sample: { size: 3 } }])
+			.toArray();
+		console.log(randomDocuments);
+		return randomDocuments;
+	} catch (e) {
+		console.log(e);
+		throw e; // Re-throw the error to be caught by the caller
+	} finally {
+		await client.close();
+	}
 }
 
-
 // Start the server
-
 (async () => {
 	const fetch = (await import("node-fetch")).default;
 	global.fetch = fetch;
@@ -48,12 +46,6 @@ async function main() {
 
 	const OpenAIKey = process.env.OPENAI_KEY;
 	const openai = new OpenAI({ apiKey: OpenAIKey });
-
-	const app = express();
-	const port = 8080;
-
-	// Enable CORS
-	app.use(cors());
 
 	// Set up multer storage
 	const storage = multer.diskStorage({
@@ -105,15 +97,15 @@ async function main() {
 	const client = new MongoClient(uri);
 
 	// Route to handle file upload and upload to S3
-  app.get('/get', async (req, res) => {
-  try {
-    const docs = await main();
-    res.json(docs); // Send the titles as JSON response
-  } catch (e) {
-    console.error('Error fetching titles from MongoDB:', e);
-    res.status(500).json({ error: 'Internal Server Error' }); // Send an error response
-  }
-});
+	app.get("/get", async (req, res) => {
+		try {
+			const docs = await main();
+			res.json(docs); // Send the titles as JSON response
+		} catch (e) {
+			console.error("Error fetching titles from MongoDB:", e);
+			res.status(500).json({ error: "Internal Server Error" }); // Send an error response
+		}
+	});
 
 	app.post("/upload", upload.single("mp3file"), async (req, res) => {
 		if (!req.file) {
@@ -163,6 +155,7 @@ async function main() {
 						url: data.Location,
 						transcription: transcription,
 						length: recordingTime,
+						createdAt: new Date(), // Add the current timestamp
 					};
 
 					await collection.insertOne(record);
@@ -221,4 +214,40 @@ async function main() {
 		console.log(redFlag);
 		return [redFlag.toLowerCase(), transcription];
 	}
+
+	// Add the cron job here
+	cron.schedule("0 * * * *", async () => {
+		console.log("Running cleanup job...");
+
+		try {
+			// Connect to MongoDB
+			await client.connect();
+			const database = client.db("AnonyVent");
+			const collection = database.collection("Vents");
+
+			// Find records older than 24 hours
+			const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+			const oldRecords = await collection
+				.find({ createdAt: { $lt: cutoff } })
+				.toArray();
+
+			for (const record of oldRecords) {
+				// Delete S3 object
+				const params = {
+					Bucket: "anonyvent",
+					Key: path.basename(record.url),
+				};
+				await s3.deleteObject(params).promise();
+
+				// Delete MongoDB document
+				await collection.deleteOne({ _id: record._id });
+			}
+
+			console.log("Cleanup job completed.");
+		} catch (e) {
+			console.error("Error during cleanup job:", e);
+		} finally {
+			await client.close();
+		}
+	});
 })();

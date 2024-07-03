@@ -1,75 +1,234 @@
 .container {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	height: 80vh; /* Adjusted height to prevent overflow */
-	text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    text-align: center;
+    padding: 1rem;
+    width: 100%;
+    max-width: 97vw;
+    overflow-x: hidden;
 }
 
 .recording-controls {
     display: flex;
-    justify-content: space-between; /* To space the buttons and time message */
     align-items: center;
-    margin-top: 20px; /* Adjust as needed for spacing */
+    justify-content: space-between;
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 400px;
+    padding: 0 1rem;
+}
+
+.pause-resume-button,
+.stop-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    flex: 0 0 auto;
+}
+
+.pause-resume-button img,
+.stop-button img {
+    width: 3rem;
+    height: 3rem;
 }
 
 .recording-time {
-margin-left: 20px; /* Adjust margin between buttons and time message */
+    font-size: 1.5rem;
+    margin: 0;
+    margin-top: 0px;
+    flex: 0 0 auto;
 }
 
-
-.initial-message {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	height: 60%; /* Adjusted height to prevent overflow */
+.button-spacer {
+    flex: 1 1 auto;
+    min-width: 2rem;
 }
 
 .record-button {
-	position: absolute;
-	bottom: 5%; /* Adjusted position to be closer to the bottom */
-	padding: 8px 16px; /* Adjusted padding for compactness */
-	font-size: 16px; /* Adjusted font size for compactness */
+    position: absolute;
+    bottom: 5%;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
 }
 
-.vent-message {
-	font-size: 24px; /* Font size for the "Vent it out" message */
-	margin: 20px 0; /* Margin to position it nicely */
+.record-button img {
+    width: 5rem;
+    height: 5rem;
+}
+
+.initial-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60%;
+}
+
+.vent-message,
+.user-message {
+    font-size: 10vw;
+    margin: 1rem 0;
+}
+
+.preview-text-container {
+    display: flex;
+    margin-right: 20%;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.Preview-Text {
+    margin-right: 400px;
+    font-size: 10rem;
+    margin: 1rem 0;
+    white-space: nowrap;
+    width: 100%;
+    text-align: center;
 }
 
 .preview {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
 }
 
 .preview-buttons {
-	display: flex;
-	justify-content: center;
-	gap: 10px; /* Space between buttons */
-	margin-top: 10px; /* Margin to separate buttons from other elements */
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.new-recording-button:hover,
+.submit-recording-button:hover {
+    opacity: 0.9;
 }
 
 h2 {
-	margin-top: 8px; /* Adjusted margin for compactness */
+    margin-top: 0.5rem;
 }
 
 audio {
-	margin-top: 8px; /* Adjusted margin for compactness */
+    margin-top: 0.5rem;
+    width: 100%;
 }
 
-input {
-	margin-top: 8px; /* Adjusted margin for compactness */
-	padding: 4px; /* Adjusted padding for compactness */
+.title-input {
+    margin-top: 0.5rem;
+    padding: 1rem;
+    border-radius: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 1.2rem;
+    line-height: 1.5;
+    min-height: 3.5rem;
 }
 
 button {
-	margin-top: 8px; /* Adjusted margin for compactness */
-	padding: 8px 16px; /* Adjusted padding for compactness */
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
 }
 
 p {
-    margin-top: 8px; 
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 1200px) {
+    .Preview-Text {
+        font-size: 12rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .Preview-Text {
+        font-size: 10rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .vent-message,
+    .user-message {
+        font-size: 10vw;
+    }
+
+    .Preview-Text {
+        font-size: 8rem;
+    }
+
+    .record-button img {
+        width: 4rem;
+        height: 4rem;
+    }
+
+    .recording-controls {
+        padding: 0 0.5rem;
+    }
+
+    .pause-resume-button img,
+    .stop-button img {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .recording-time {
+        font-size: 1.25rem;
+    }
+
+    .button-spacer {
+        min-width: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .vent-message,
+    .user-message {
+        font-size: 8vw;
+    }
+
+    .Preview-Text {
+        font-size: 5rem;
+    }
+
+    .record-button img {
+        width: 3.5rem;
+        height: 3.5rem;
+    }
+
+    .pause-resume-button img,
+    .stop-button img {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .recording-time {
+        font-size: 1rem;
+    }
+
+    .button-spacer {
+        min-width: 0.5rem;
+    }
+
+    .title-input {
+        font-size: 1rem;
+        padding: 0.8rem;
+    }
+}
+
+@media (max-width: 320px) {
+    .Preview-Text {
+        font-size: 4rem;
+    }
 }
