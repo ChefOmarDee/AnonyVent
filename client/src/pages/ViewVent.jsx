@@ -1,20 +1,13 @@
-import React, {
-	useCallback,
-	useContext,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import pauseButton from "../images/pause-button-new.png";
 import playButton from "../images/play-button-new.png";
 import tapeRecorder from "../images/tape-recorder-gif.gif";
-import { UserContext } from "./UserContext";
 import "./ViewVent.css";
 
 const ViewVent = () => {
 	let { userId } = useParams();
-	const { value } = useContext(UserContext);
+
 	const [state, setState] = useState({
 		s3_url: "",
 		title: "",
@@ -33,9 +26,9 @@ const ViewVent = () => {
 	};
 
 	useEffect(() => {
-		if (value && value.docs) {
-			console.log(value);
-			const foundItem = value.docs.find((doc) => doc._id === userId);
+		const storedDocs = JSON.parse(localStorage.getItem("docs"));
+		if (storedDocs && storedDocs.length > 0) {
+			const foundItem = storedDocs.find((doc) => doc._id === userId);
 			if (foundItem) {
 				handleStateUpdate({
 					s3_url: foundItem.url,
@@ -46,7 +39,7 @@ const ViewVent = () => {
 				});
 			}
 		}
-	}, [value, userId]);
+	}, [userId]);
 
 	useEffect(() => {
 		const audio = audioRef.current;
@@ -124,7 +117,11 @@ const ViewVent = () => {
 									type="range"
 									min="0"
 									max="100"
-									value={(state.currentTime / state.duration) * 100}
+									value={
+										state.hasDuration && state.duration > 0
+											? (state.currentTime / state.duration) * 100
+											: 0
+									}
 									onChange={handleSeek}
 									disabled={state.isLoading || !state.hasDuration}
 								/>

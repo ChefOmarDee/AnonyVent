@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import micImg from "../images/mic-button.png";
 import tapeImg from "../images/retro-tape-icon.png";
+import refreshImg from "../images/refresh-img.png";
 import "./Home.css";
 
 const Home = () => {
 	const [docs, setDocs] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
 
 	const fetchDocs = async () => {
+		setIsLoading(true);
 		try {
 			const response = await fetch("http://localhost:8080/get"); // Update the URL with your server URL
 			if (!response.ok) {
@@ -18,6 +21,8 @@ const Home = () => {
 			localStorage.setItem("docs", JSON.stringify(data)); // Store data in localStorage
 		} catch (error) {
 			console.error("Error fetching data:", error);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -25,6 +30,7 @@ const Home = () => {
 		const storedDocs = JSON.parse(localStorage.getItem("docs"));
 		if (storedDocs && storedDocs.length > 0) {
 			setDocs(storedDocs);
+			setIsLoading(false);
 		} else {
 			fetchDocs();
 		}
@@ -33,8 +39,6 @@ const Home = () => {
 	const handleFetchNewItems = () => {
 		fetchDocs();
 	};
-
-	console.log("Context value:", value);
 
 	if (isLoading) {
 		return (
