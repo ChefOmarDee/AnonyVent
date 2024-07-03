@@ -105,6 +105,9 @@ main {
     width: 30px;
     height: 30px;
 }
+#refresh-button:active {
+    transform: translateY(4px);
+  }
 
 #btns-container {
     display: flex;
@@ -117,6 +120,36 @@ main {
 .btn:hover {
     opacity: 0.60;
 }
+
+.loading-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 75vh;
+    background-color: #A4F0C2;
+  }
+  
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #333;
+    border-top: 5px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  .loading-text {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 
 /* Media Queries for Responsive Design */
 @media (max-width: 768px) {
@@ -159,3 +192,4 @@ main {
         height: 10px;
     }
 }
+
