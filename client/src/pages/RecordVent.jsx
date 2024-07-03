@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import pauseImg from "../images/pause-button.png";
 import micImg from "../images/mic-button.png";
@@ -20,6 +21,7 @@ const RecordVent = () => {
 	const audioChunksRef = useRef([]);
 	const timerRef = useRef(null);
 	const finalRecordingTimeRef = useRef(0);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		// Clean up function for stopping audio when component unmounts
@@ -136,6 +138,7 @@ const RecordVent = () => {
 				setAudioURL("");
 				setAudioBlob(null);
 				setProcessing(false); // End processing state
+				navigate("/");
 			} catch (error) {
 				console.error("Error uploading file:", error);
 				setProcessing(false); // End processing state on error
