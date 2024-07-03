@@ -4,9 +4,11 @@
     align-items: center;
     justify-content: center;
     min-height: 80vh;
-
     text-align: center;
     padding: 1rem;
+    width: 100%;
+    max-width: 97vw;
+    overflow-x: hidden;
 }
 
 .recording-controls {
@@ -37,7 +39,7 @@
 .recording-time {
     font-size: 1.5rem;
     margin: 0;
-	margin-top: 0px;
+    margin-top: 0px;
     flex: 0 0 auto;
 }
 
@@ -68,9 +70,29 @@
     height: 60%;
 }
 
-.vent-message {
-    font-size: 2.5rem;
+.vent-message,
+.user-message {
+    font-size: 10vw;
     margin: 1rem 0;
+}
+
+.preview-text-container {
+    display: flex;
+    margin-right: 20%;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.Preview-Text {
+    margin-right: 400px;
+    font-size: 10rem;
+    margin: 1rem 0;
+    white-space: nowrap;
+    width: 100%;
+    text-align: center;
 }
 
 .preview {
@@ -88,13 +110,11 @@
     margin-top: 0.5rem;
     flex-wrap: wrap;
 }
-.new-recording-button:hover,.submit-recording-button:hover {
-	opacity: 0.9;
-}
-.user-message{
-	font-size: 1rem;
-}
 
+.new-recording-button:hover,
+.submit-recording-button:hover {
+    opacity: 0.9;
+}
 
 h2 {
     margin-top: 0.5rem;
@@ -107,13 +127,13 @@ audio {
 
 .title-input {
     margin-top: 0.5rem;
-    padding: 1rem;  /* Increased from 0.5rem to 1rem */
+    padding: 1rem;
     border-radius: 10px;
-    width: 150%;
+    width: 100%;
     box-sizing: border-box;
-    font-size: 1.2rem;  /* Increased font size for better visibility */
-    line-height: 1.5;  /* Added line-height for better text spacing */
-    min-height: 3.5rem;  /* Set a minimum height */
+    font-size: 1.2rem;
+    line-height: 1.5;
+    min-height: 3.5rem;
 }
 
 button {
@@ -126,9 +146,26 @@ p {
     margin-top: 0.5rem;
 }
 
+@media (max-width: 1200px) {
+    .Preview-Text {
+        font-size: 12rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .Preview-Text {
+        font-size: 10rem;
+    }
+}
+
 @media (max-width: 768px) {
-    .vent-message {
-        font-size: 2rem;
+    .vent-message,
+    .user-message {
+        font-size: 10vw;
+    }
+
+    .Preview-Text {
+        font-size: 8rem;
     }
 
     .record-button img {
@@ -156,8 +193,13 @@ p {
 }
 
 @media (max-width: 480px) {
-    .vent-message {
-        font-size: 1.5rem;
+    .vent-message,
+    .user-message {
+        font-size: 8vw;
+    }
+
+    .Preview-Text {
+        font-size: 5rem;
     }
 
     .record-button img {
@@ -177,5 +219,16 @@ p {
 
     .button-spacer {
         min-width: 0.5rem;
+    }
+
+    .title-input {
+        font-size: 1rem;
+        padding: 0.8rem;
+    }
+}
+
+@media (max-width: 320px) {
+    .Preview-Text {
+        font-size: 4rem;
     }
 }

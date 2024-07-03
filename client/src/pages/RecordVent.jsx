@@ -164,7 +164,7 @@ const RecordVent = () => {
 					</button>
 				</div>
 			)}
-			{isRecording && <p className="vent-message">Vent it all OUT</p>}
+			{isRecording && <p className="vent-message">Vent,</p>}
 			{(isRecording || audioURL) && (
 				<div>
 					{isRecording && (
@@ -191,36 +191,41 @@ const RecordVent = () => {
 					)}
 
 					{audioURL && (
-						<div className="preview">
-							<input
-								type="text"
-								className="title-input"
-								placeholder="Enter recording title"
-								value={title}
-								onChange={(e) => setTitle(e.target.value)}
-							/>
-							<br />
-							<br />
-							<audio controls src={audioURL}></audio>
-							<br />
-							<br />
-							<div className="preview-buttons">
-								<button
-									className="new-recording-button"
-									onClick={startNewRecording}
-									disabled={isRecording}
-								>
-									New Recording
-								</button>
-								<button
-									className="submit-recording-button"
-									onClick={uploadAudio}
-									disabled={isUploading || processing}
-								>
-									{processing ? "Processing..." : "Upload Recording"}
-								</button>
+						<>
+							<div className="preview">
+								<div className="preview-text-container">
+									<p className="Preview-Text">Let Go.</p>
+								</div>
+								<input
+									type="text"
+									className="title-input"
+									placeholder="Enter recording title"
+									value={title}
+									onChange={(e) => setTitle(e.target.value)}
+								/>
+								<br />
+								<br />
+								<audio controls src={audioURL}></audio>
+								<br />
+								<br />
+								<div className="preview-buttons">
+									<button
+										className="new-recording-button"
+										onClick={startNewRecording}
+										disabled={isRecording}
+									>
+										New Recording
+									</button>
+									<button
+										className="submit-recording-button"
+										onClick={uploadAudio}
+										disabled={isUploading || processing}
+									>
+										{processing ? "Processing..." : "Upload Recording"}
+									</button>
+								</div>
 							</div>
-						</div>
+						</>
 					)}
 				</div>
 			)}
