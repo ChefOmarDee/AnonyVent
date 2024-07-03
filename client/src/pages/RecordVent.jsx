@@ -5,7 +5,7 @@ import pauseImg from "../images/pause-button.png";
 import micImg from "../images/mic-button.png";
 import stopImg from "../images/stop-button.png";
 import resumeImg from "../images/play-button.png";
-import "./RecordVent.css"; // Import the CSS file for styling
+import "./RecordVent.css";
 
 const RecordVent = () => {
 	const [isRecording, setIsRecording] = useState(false);
@@ -15,18 +15,17 @@ const RecordVent = () => {
 	const [recordingTime, setRecordingTime] = useState(0);
 	const [isUploading, setIsUploading] = useState(false);
 	const [uploadingResponse, setUploadingResponse] = useState("");
-	const [processing, setProcessing] = useState(false); // State for processing state
-	const [title, setTitle] = useState(""); // State for recording title
+	const [processing, setProcessing] = useState(false);
+	const [title, setTitle] = useState("");
 	const mediaRecorderRef = useRef(null);
 	const audioChunksRef = useRef([]);
 	const timerRef = useRef(null);
 	const finalRecordingTimeRef = useRef(0);
 
 	useEffect(() => {
-		// Clean up function for stopping audio when component unmounts
 		return () => {
 			if (audioURL) {
-				URL.revokeObjectURL(audioURL); // Revoke the Object URL to stop audio
+				URL.revokeObjectURL(audioURL);
 			}
 		};
 	}, [audioURL]);
@@ -65,8 +64,8 @@ const RecordVent = () => {
 				mediaRecorderRef.current.start();
 				setIsRecording(true);
 				setIsPaused(false);
-				setRecordingTime(0); // Reset recording time
-				setAudioURL(""); // Clear the audio URL to hide the preview
+				setRecordingTime(0);
+				setAudioURL("");
 				startTimer();
 			}
 		} catch (error) {
@@ -108,22 +107,27 @@ const RecordVent = () => {
 			setIsRecording(false);
 			setIsPaused(false);
 			clearInterval(timerRef.current);
-			finalRecordingTimeRef.current = recordingTime; // Store the final recording time
+			finalRecordingTimeRef.current = recordingTime;
 		}
 	};
 
 	const uploadAudio = async () => {
 		if (audioBlob && title.trim() !== "") {
-			// Check if title is not empty
-			setProcessing(true); // Start processing state
+			setProcessing(true);
 			const formData = new FormData();
 			formData.append("mp3file", audioBlob, "recording.mp3");
 			formData.append("recordingTime", finalRecordingTimeRef.current);
-			formData.append("title", title); // Append title to FormData
+			formData.append("title", title);
+
+			// Add device type detection
+			const deviceType = /iPhone|iPad|iPod/.test(navigator.userAgent)
+				? "iOS"
+				: "other";
+			formData.append("deviceType", deviceType);
 
 			try {
 				const response = await axios.post(
-					"https://anonyvent-heroku-817f10d16a98.herokuapp.com/upload",
+					"http://localhost:8080/upload",
 					formData,
 					{
 						headers: {
@@ -136,10 +140,10 @@ const RecordVent = () => {
 				console.log("File uploaded successfully:", response.data);
 				setAudioURL("");
 				setAudioBlob(null);
-				setProcessing(false); // End processing state
+				setProcessing(false);
 			} catch (error) {
 				console.error("Error uploading file:", error);
-				setProcessing(false); // End processing state on error
+				setProcessing(false);
 			}
 		}
 	};
@@ -152,7 +156,7 @@ const RecordVent = () => {
 		setRecordingTime(0);
 		setTitle("");
 		setUploadingResponse("");
-		startRecording(); // Start new recording immediately
+		startRecording();
 	};
 
 	return (

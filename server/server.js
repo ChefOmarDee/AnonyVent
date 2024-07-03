@@ -14,29 +14,25 @@ const client = new MongoClient(uri);
 const app = express();
 const port = 8080;
 
-// Enable CORS
 app.use(cors());
 
 async function main() {
 	try {
-		// Connect to MongoDB cluster
 		await client.connect();
 		const database = client.db("AnonyVent");
 		const collection = database.collection("Vents");
 		const randomDocuments = await collection
 			.aggregate([{ $sample: { size: 3 } }])
 			.toArray();
-		console.log(randomDocuments);
 		return randomDocuments;
 	} catch (e) {
 		console.log(e);
-		throw e; // Re-throw the error to be caught by the caller
+		throw e;
 	} finally {
 		await client.close();
 	}
 }
 
-// Start the server
 (async () => {
 	const fetch = (await import("node-fetch")).default;
 	global.fetch = fetch;
@@ -47,7 +43,6 @@ async function main() {
 	const OpenAIKey = process.env.OPENAI_KEY;
 	const openai = new OpenAI({ apiKey: OpenAIKey });
 
-	// Set up multer storage
 	const storage = multer.diskStorage({
 		destination: function (req, file, cb) {
 			cb(null, "uploads/");
@@ -77,13 +72,11 @@ async function main() {
 		},
 	});
 
-	// Create the uploads directory if it doesn't exist
 	const dir = "./uploads";
 	if (!fs.existsSync(dir)) {
 		fs.mkdirSync(dir);
 	}
 
-	// Configure AWS SDK
 	AWS.config.update({
 		accessKeyId: process.env.AWS_ACCESS,
 		secretAccessKey: process.env.AWS_SECRET,
@@ -92,18 +85,28 @@ async function main() {
 
 	const s3 = new AWS.S3();
 
-	// MongoDB Connection URI
-	const uri = process.env.CONNECTION_STR;
-	const client = new MongoClient(uri);
-
-	// Route to handle file upload and upload to S3
 	app.get("/get", async (req, res) => {
+		const userDeviceType = req.query.deviceType;
 		try {
-			const docs = await main();
-			res.json(docs); // Send the titles as JSON response
+			await client.connect();
+			const database = client.db("AnonyVent");
+			const collection = database.collection("Vents");
+
+			let query = {};
+			if (userDeviceType === "iOS") {
+				query = { deviceType: "iOS" };
+			}
+
+			const randomDocuments = await collection
+				.aggregate([{ $match: query }, { $sample: { size: 3 } }])
+				.toArray();
+
+			res.json(randomDocuments);
 		} catch (e) {
-			console.error("Error fetching titles from MongoDB:", e);
-			res.status(500).json({ error: "Internal Server Error" }); // Send an error response
+			console.error("Error fetching documents from MongoDB:", e);
+			res.status(500).json({ error: "Internal Server Error" });
+		} finally {
+			await client.close();
 		}
 	});
 
@@ -112,22 +115,19 @@ async function main() {
 			return res.status(400).send("No file uploaded.");
 		}
 
-		const recordingTime = req.body.recordingTime; // Extract recording time from request body
-		console.log(`Recording Time: ${recordingTime} seconds`);
+		const recordingTime = req.body.recordingTime;
+		const deviceType = req.body.deviceType;
 
 		const fileContent = fs.readFileSync(req.file.path);
-		console.log(req.file.filename);
-		console.log(req.body.title);
+
 		const params = {
 			Bucket: "anonyvent",
-			Key: `${req.file.filename}`, // File name you want to save as in S3
+			Key: `${req.file.filename}`,
 			Body: fileContent,
 			ContentType: req.file.mimetype,
-			// ACL: "public-read", // File permissions
 		};
 
 		s3.upload(params, async (err, data) => {
-			// Delete the local file after upload
 			fs.unlink(req.file.path, (err) => {
 				if (err) {
 					console.error("Error deleting the file:", err);
@@ -144,10 +144,8 @@ async function main() {
 
 			if (flag === "false") {
 				try {
-					// Connect to MongoDB cluster
 					await client.connect();
 					const database = client.db("AnonyVent");
-					// Access the collection
 					const collection = database.collection("Vents");
 
 					const record = {
@@ -155,7 +153,8 @@ async function main() {
 						url: data.Location,
 						transcription: transcription,
 						length: recordingTime,
-						createdAt: new Date(), // Add the current timestamp
+						createdAt: new Date(),
+						deviceType: deviceType,
 					};
 
 					await collection.insertOne(record);
@@ -176,7 +175,6 @@ async function main() {
 		});
 	});
 
-	// Start the server
 	app.listen(port, () => {
 		console.log(`Server running at http://localhost:${port}/`);
 	});
@@ -215,31 +213,26 @@ async function main() {
 		return [redFlag.toLowerCase(), transcription];
 	}
 
-	// Add the cron job here
 	cron.schedule("0 * * * *", async () => {
 		console.log("Running cleanup job...");
 
 		try {
-			// Connect to MongoDB
 			await client.connect();
 			const database = client.db("AnonyVent");
 			const collection = database.collection("Vents");
 
-			// Find records older than 24 hours
 			const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
 			const oldRecords = await collection
 				.find({ createdAt: { $lt: cutoff } })
 				.toArray();
 
 			for (const record of oldRecords) {
-				// Delete S3 object
 				const params = {
 					Bucket: "anonyvent",
 					Key: path.basename(record.url),
 				};
 				await s3.deleteObject(params).promise();
 
-				// Delete MongoDB document
 				await collection.deleteOne({ _id: record._id });
 			}
 

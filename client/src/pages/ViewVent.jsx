@@ -74,6 +74,7 @@ const ViewVent = () => {
 			audio.removeEventListener("ended", handleEnded);
 			audio.removeEventListener("timeupdate", handleTimeUpdate);
 			audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+			audio.pause(); // Pause the audio when component unmounts
 		};
 	}, [state.s3_url, state.duration]);
 
@@ -97,6 +98,24 @@ const ViewVent = () => {
 		},
 		[state.duration]
 	);
+
+	useEffect(() => {
+		const handleVisibilityChange = () => {
+			if (document.hidden) {
+				const audio = audioRef.current;
+				if (state.isPlaying) {
+					audio.pause();
+					handleStateUpdate({ isPlaying: false });
+				}
+			}
+		};
+
+		document.addEventListener("visibilitychange", handleVisibilityChange);
+
+		return () => {
+			document.removeEventListener("visibilitychange", handleVisibilityChange);
+		};
+	}, [state.isPlaying]);
 
 	return (
 		<div className="AudioFileListItem">

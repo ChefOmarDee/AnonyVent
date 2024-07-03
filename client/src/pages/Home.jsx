@@ -12,9 +12,12 @@ const Home = () => {
 	const fetchDocs = async () => {
 		setIsLoading(true);
 		try {
+			const deviceType = /iPhone|iPad|iPod/.test(navigator.userAgent)
+				? "iOS"
+				: "other";
 			const response = await fetch(
-				"https://anonyvent-heroku-817f10d16a98.herokuapp.com/get"
-			); // Update the URL with your server URL
+				`http://localhost:8080/get?deviceType=${deviceType}`
+			);
 			if (!response.ok) {
 				throw new Error("Network response was not ok");
 			}
