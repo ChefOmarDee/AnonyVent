@@ -12,7 +12,9 @@ const Home = () => {
 	const fetchDocs = async () => {
 		setIsLoading(true);
 		try {
-			const response = await fetch("http://localhost:8080/get"); // Update the URL with your server URL
+			const response = await fetch(
+				"https://anonyvent-heroku-817f10d16a98.herokuapp.com/get"
+			); // Update the URL with your server URL
 			if (!response.ok) {
 				throw new Error("Network response was not ok");
 			}
