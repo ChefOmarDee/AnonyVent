@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import pauseButton from "../images/pause-button.png";
-import playButton from "../images/play-button.png";
+import pauseButton from "../images/pause-button-new.png";
+import playButton from "../images/play-button-new.png";
 import tapeRecorder from "../images/tape-recorder-gif.gif";
 import { UserContext } from "./UserContext";
 import "./ViewVent.css";
