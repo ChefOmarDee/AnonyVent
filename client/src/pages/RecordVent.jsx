@@ -14,21 +14,22 @@ const RecordVent = () => {
 	const [audioBlob, setAudioBlob] = useState(null);
 	const [recordingTime, setRecordingTime] = useState(0);
 	const [isUploading, setIsUploading] = useState(false);
-	const [uploadingResponse, setUploadingResponse] = useState("");
 	const [processing, setProcessing] = useState(false);
 	const [title, setTitle] = useState("");
 	const mediaRecorderRef = useRef(null);
 	const audioChunksRef = useRef([]);
 	const timerRef = useRef(null);
 	const finalRecordingTimeRef = useRef(0);
+	const navigate = useNavigate();
 
 	useEffect(() => {
+		startRecording();
 		return () => {
 			if (audioURL) {
 				URL.revokeObjectURL(audioURL);
 			}
 		};
-	}, [audioURL]);
+	}, []);
 
 	useEffect(() => {
 		if (isRecording && recordingTime >= 180) {
@@ -119,7 +120,6 @@ const RecordVent = () => {
 			formData.append("recordingTime", finalRecordingTimeRef.current);
 			formData.append("title", title);
 
-			// Add device type detection
 			const deviceType = /iPhone|iPad|iPod/.test(navigator.userAgent)
 				? "iOS"
 				: "other";
@@ -136,39 +136,28 @@ const RecordVent = () => {
 					}
 				);
 
-				setUploadingResponse("File uploaded successfully");
 				console.log("File uploaded successfully:", response.data);
-				setAudioURL("");
-				setAudioBlob(null);
-				setProcessing(false);
+				navigate("/", {
+					state: {
+						uploadStatus: "Recording successfully uploaded",
+					},
+				});
 			} catch (error) {
 				console.error("Error uploading file:", error);
+				navigate("/", {
+					state: {
+						uploadStatus:
+							"Recording upload failed due to containing flagged content",
+					},
+				});
+			} finally {
 				setProcessing(false);
 			}
 		}
 	};
 
-	const startNewRecording = () => {
-		setIsRecording(false);
-		setIsPaused(false);
-		setAudioURL("");
-		setAudioBlob(null);
-		setRecordingTime(0);
-		setTitle("");
-		setUploadingResponse("");
-		startRecording();
-	};
-
 	return (
 		<div className="container">
-			{!isRecording && !audioURL && (
-				<div className="initial-message">
-					<p className="user-message">Speak,</p>
-					<button className="record-button" onClick={startRecording}>
-						<img src={micImg} alt="Start Recording" />
-					</button>
-				</div>
-			)}
 			{isRecording && <p className="vent-message">Vent,</p>}
 			{(isRecording || audioURL) && (
 				<div>
@@ -216,7 +205,7 @@ const RecordVent = () => {
 								<div className="preview-buttons">
 									<button
 										className="new-recording-button"
-										onClick={startNewRecording}
+										onClick={startRecording}
 										disabled={isRecording}
 									>
 										New Recording

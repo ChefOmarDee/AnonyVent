@@ -140,9 +140,9 @@ async function main() {
 				return res.status(500).send("Failed to upload file.");
 			}
 
-			let [flag, transcription] = await gptChecker(req.file.filename);
+			let [redFlag, transcription] = await gptChecker(req.file.filename);
 
-			if (flag === "false") {
+			if (redFlag === false) {
 				try {
 					await client.connect();
 					const database = client.db("AnonyVent");
@@ -168,6 +168,11 @@ async function main() {
 					await client.close();
 				}
 			} else {
+				const params = {
+					Bucket: "anonyvent",
+					Key: path.basename(data.Location),
+				};
+				await s3.deleteObject(params).promise();
 				res.send(
 					`File contains flagged content and was not saved to MongoDB. Recording time: ${recordingTime} seconds.`
 				);
@@ -198,8 +203,30 @@ async function main() {
 	async function gptChecker(audioTitle) {
 		const transcription = await getTranscription(audioTitle);
 		console.log(transcription);
-		const rules =
-			"If the following transcription mentions sexual activities,or mentions hurting another lifeform return true otherwise return false: ";
+		const rules = `Persona: You are an AI content moderator named SafeGuard, designed to protect users and maintain a healthy online environment.
+		Context: You're working for a mental health app called "AnonyVent" that allows users to express their frustrations and negative emotions in a safe, anonymous space. While the app encourages open expression, it's crucial to flag potentially harmful or inappropriate content.
+		Task: Analyze user submissions to identify mentions of rape or molestation or intentions to harm any living being. Your role is critical in maintaining the app's safety and integrity.
+		Exemplar:
+		Input: "I'm so angry at my boss for yelling at me today!"
+		Output: false
+		Input: "I'm so fucking mad at my bitchass motherfucking boss"
+		Output: false
+		Input: "Boutta fuck today"
+		Output: false
+		Input: "she is a child molester and a rapist"
+		Output: true
+		Input: "I want to punch my neighbor for playing loud music all night."
+		Output: true
+		Input: "I had a steamy encounter with my partner last night."
+		Output: true
+		Format:
+		Input: [User submission text]
+		Output: true/false
+		If the submission mentions sexual activities or expresses intent to harm any lifeform, return "true". Otherwise, return "false".
+		Tone: Maintain a neutral, non-judgmental tone. Your role is to flag content objectively without passing judgment on the users or their expressions.
+		Prompt: Given the user submission below, analyze the content. If the text mentions sexual activities or expresses intention to harm any lifeform, return true. Otherwise, return false.
+		[User submission text]:
+		`;
 		const prompt = rules.concat(transcription);
 		const completion = await openai.completions.create({
 			model: "gpt-3.5-turbo-instruct",
@@ -208,9 +235,11 @@ async function main() {
 			temperature: 0,
 		});
 
-		const redFlag = completion.choices[0].text.trim();
+		const redFlag = completion.choices[0].text.trim().includes("true");
 		console.log(redFlag);
-		return [redFlag.toLowerCase(), transcription];
+		console.log(typeof redFlag);
+
+		return [redFlag, transcription];
 	}
 
 	cron.schedule("0 * * * *", async () => {
