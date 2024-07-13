@@ -14,15 +14,24 @@ Moderation: Ensure a safe and respectful environment with community guidelines.
 
 Steps To Run:
 MUST CREATE AWS, MONGODB, ASSEMBLY AI, AND OPEN AI KEYS AND MAKE AN S3 BUCKET. PUT IT INTO AN ENV FILE IN THE SAME DIRECTORY AS SERVER.JS 
+
 git clone https://github.com/AnonyVent/AnonyVent.git
 
 cd anonyvent
+
 cd into server folder
+
 npm install
+
 npm start
 
+
 open new terminal and do the following 
+
 cd into client folder
+
 npm install
+
 npm start
+
 
