@@ -16,23 +16,6 @@ const port = 8080;
 
 app.use(cors());
 
-async function main() {
-	try {
-		await client.connect();
-		const database = client.db("AnonyVent");
-		const collection = database.collection("Vents");
-		const randomDocuments = await collection
-			.aggregate([{ $sample: { size: 3 } }])
-			.toArray();
-		return randomDocuments;
-	} catch (e) {
-		console.log(e);
-		throw e;
-	} finally {
-		await client.close();
-	}
-}
-
 (async () => {
 	const fetch = (await import("node-fetch")).default;
 	global.fetch = fetch;
