@@ -127,7 +127,7 @@ const RecordVent = () => {
 
 			try {
 				const response = await axios.post(
-					"http://localhost:8080/upload",
+					"https://anonyvent-heroku-817f10d16a98.herokuapp.com/upload",
 					formData,
 					{
 						headers: {
@@ -136,20 +136,23 @@ const RecordVent = () => {
 					}
 				);
 
-				console.log("File uploaded successfully:", response.data);
-				navigate("/", {
-					state: {
-						uploadStatus: "Recording successfully uploaded",
-					},
-				});
+				console.log(response.data);
+				if (!response.data.includes("flagged")) {
+					navigate("/", {
+						state: {
+							uploadStatus: "Recording successfully uploaded",
+						},
+					});
+				} else {
+					navigate("/", {
+						state: {
+							uploadStatus:
+								"Recording upload failed due to containing flagged content",
+						},
+					});
+				}
 			} catch (error) {
 				console.error("Error uploading file:", error);
-				navigate("/", {
-					state: {
-						uploadStatus:
-							"Recording upload failed due to containing flagged content",
-					},
-				});
 			} finally {
 				setProcessing(false);
 			}

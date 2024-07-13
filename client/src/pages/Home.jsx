@@ -20,7 +20,7 @@ const Home = () => {
 				? "iOS"
 				: "other";
 			const response = await fetch(
-				`http://localhost:8080/get?deviceType=${deviceType}`
+				`https://anonyvent-heroku-817f10d16a98.herokuapp.com/get?deviceType=${deviceType}`
 			);
 			if (!response.ok) {
 				throw new Error("Network response was not ok");
