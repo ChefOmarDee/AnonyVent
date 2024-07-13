@@ -12,7 +12,7 @@ const uri = process.env.CONNECTION_STR;
 const client = new MongoClient(uri);
 
 const app = express();
-const port = 8080;
+const port = process.env.PORT || 8080;
 
 app.use(cors());
 
@@ -188,7 +188,7 @@ app.use(cors());
 		console.log(transcription);
 		const rules = `Persona: You are an AI content moderator named SafeGuard, designed to protect users and maintain a healthy online environment.
 		Context: You're working for a mental health app called "AnonyVent" that allows users to express their frustrations and negative emotions in a safe, anonymous space. While the app encourages open expression, it's crucial to flag potentially harmful or inappropriate content.
-		Task: Analyze user submissions to identify mentions of rape or molestation or intentions to harm any living being. Your role is critical in maintaining the app's safety and integrity.
+		Task: Analyze user submissions to identify mentions of rape or molestation or hurting killing any living being or persons or characters. Your role is critical in maintaining the app's safety and integrity.
 		Exemplar:
 		Input: "I'm so angry at my boss for yelling at me today!"
 		Output: false
@@ -200,7 +200,7 @@ app.use(cors());
 		Output: true
 		Input: "I want to punch my neighbor for playing loud music all night."
 		Output: true
-		Input: "I had a steamy encounter with my partner last night."
+		Input: "I am going to kill Carolina Campos."
 		Output: true
 		Format:
 		Input: [User submission text]
