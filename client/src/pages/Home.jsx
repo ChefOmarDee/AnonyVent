@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import micImg from "../images/mic-button.png";
 import tapeImg from "../images/retro-tape-icon.png";
 import refreshImg from "../images/refresh-img.png";
@@ -8,6 +8,10 @@ import "./Home.css";
 const Home = () => {
 	const [docs, setDocs] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const [showPopup, setShowPopup] = useState(false);
+	const [popupMessage, setPopupMessage] = useState("");
+	const navigate = useNavigate();
+	const location = useLocation();
 
 	const fetchDocs = async () => {
 		setIsLoading(true);
@@ -23,7 +27,7 @@ const Home = () => {
 			}
 			const data = await response.json();
 			setDocs(data);
-			localStorage.setItem("docs", JSON.stringify(data)); // Store data in localStorage
+			localStorage.setItem("docs", JSON.stringify(data));
 		} catch (error) {
 			console.error("Error fetching data:", error);
 		} finally {
@@ -39,10 +43,22 @@ const Home = () => {
 		} else {
 			fetchDocs();
 		}
-	}, []);
+
+		// Check for upload status from location state
+		if (location.state?.uploadStatus) {
+			setShowPopup(true);
+			setPopupMessage(location.state.uploadStatus);
+			// Clear the location state
+			navigate(location.pathname, { replace: true, state: {} });
+		}
+	}, [location, navigate]);
 
 	const handleFetchNewItems = () => {
 		fetchDocs();
+	};
+
+	const handleRecordClick = () => {
+		navigate("/recordvent");
 	};
 
 	if (isLoading) {
@@ -83,13 +99,17 @@ const Home = () => {
 					>
 						<img src={refreshImg} alt="refreshBtn" />
 					</button>
-					<Link to="/recordvent">
-						<div id="record-button" className="btn">
-							<img src={micImg} alt="mic-image" />
-						</div>
-					</Link>
+					<div id="record-button" className="btn" onClick={handleRecordClick}>
+						<img src={micImg} alt="mic-image" />
+					</div>
 				</div>
 			</main>
+			{showPopup && (
+				<div className="popup">
+					<p>{popupMessage}</p>
+					<button onClick={() => setShowPopup(false)}>Close</button>
+				</div>
+			)}
 		</>
 	);
 };
