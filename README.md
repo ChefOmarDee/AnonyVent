@@ -3,9 +3,13 @@
 
 Features
 Anonymity: Post your thoughts without revealing your identity.
+
 Categories: Organize vents by categories for better visibility.
+
 Supportive Community: Engage with a community that listens and supports each other.
+
 Real-time Updates: See the latest vents in real-time.
+
 Moderation: Ensure a safe and respectful environment with community guidelines.
 
 Steps To Run:
